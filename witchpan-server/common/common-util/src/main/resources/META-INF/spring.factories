@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+    com.witch.common.config.WebResultConfig, \
+    com.witch.common.handler.GlobalExceptionHandler, \
+    com.witch.common.handler.ResponseResultHandler
