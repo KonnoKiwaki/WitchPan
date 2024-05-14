@@ -59,6 +59,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
 
     @Override
     public IPage<FileInfoVO> pageInfo(Page<FileInfo> pageParam, FileInfoQuery query) {
+        //先将查询条件构造好，然后按照query的数据进行分页查询
         IPage<FileInfo> iPage = baseMapper.selectPageInfo(pageParam, query);
         List<FileInfo> records = iPage.getRecords();
         List<FileInfoVO> fileInfoVOS = records.stream().map(item -> {

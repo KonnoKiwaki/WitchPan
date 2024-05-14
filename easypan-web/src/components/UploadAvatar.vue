@@ -23,12 +23,14 @@ export default {
 }
 </script>
 <script setup>
-import { reactive, ref } from 'vue'
+import {reactive, ref} from 'vue'
 import Dialog from './Dialog.vue'
 import AvatarUpload from './AvatarUpload.vue'
 import { updateUserAvatar } from '@/api/user'
+import axios from "axios";
 
 const emit = defineEmits()
+
 
 const dialogConfig = reactive({
   show: false,
@@ -63,5 +65,6 @@ const submitForm = async () => {
   await updateUserAvatar(params)
   dialogConfig.show = false
   emit('upload-success')
+
 }
 </script>

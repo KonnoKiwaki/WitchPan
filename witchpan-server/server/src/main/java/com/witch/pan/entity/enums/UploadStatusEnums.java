@@ -1,5 +1,12 @@
 package com.witch.pan.entity.enums;
 
+import lombok.Getter;
+
+/**
+ * @author Yuuki
+ */
+
+@Getter
 public enum UploadStatusEnums {
     UPLOAD_SECONDS("upload_seconds", "秒传"),
     UPLOADING("uploading", "上传中"),
@@ -12,11 +19,4 @@ public enum UploadStatusEnums {
         this.desc = desc;
     }
 
-    public String getCode() {
-        return code;
-    }
-
-    public String getDesc() {
-        return desc;
-    }
 }

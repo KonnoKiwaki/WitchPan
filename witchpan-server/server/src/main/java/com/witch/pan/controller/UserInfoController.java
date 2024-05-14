@@ -179,13 +179,13 @@ public class UserInfoController {
         FileUtil.readFile(response, avatarPath);
     }
 
-    @GetMapping("getUserInfo")
+    @GetMapping("/getUserInfo")
     @LoginValidator
     public SessionWebUserVO getUserInfo(HttpSession session) {
         return (SessionWebUserVO) session.getAttribute(Constants.SESSION_KEY);
     }
 
-    @GetMapping("getUseSpace")
+    @GetMapping("/getUseSpace")
     @LoginValidator
     public UserSpaceDTO getUseSpace(HttpSession session) {
         SessionWebUserVO userVo = (SessionWebUserVO) session.getAttribute(Constants.SESSION_KEY);

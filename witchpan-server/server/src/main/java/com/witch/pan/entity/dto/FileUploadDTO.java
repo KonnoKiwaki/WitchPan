@@ -5,6 +5,9 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+/**
+ * @author Yuuki
+ */
 @Data
 public class FileUploadDTO {
 

@@ -1,9 +1,19 @@
 package com.witch.pan.entity.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
+/**
+ * @author Yuuki
+ */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class RenameFileDTO implements Serializable {
 
     @NotEmpty
@@ -12,27 +22,4 @@ public class RenameFileDTO implements Serializable {
     @Pattern(regexp = "[^/]")
     private String filename;
 
-    public RenameFileDTO() {
-    }
-
-    public RenameFileDTO(String id, String filename) {
-        this.id = id;
-        this.filename = filename;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getFilename() {
-        return filename;
-    }
-
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
 }

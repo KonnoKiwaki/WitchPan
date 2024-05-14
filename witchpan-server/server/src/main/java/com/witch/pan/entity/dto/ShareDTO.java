@@ -1,8 +1,18 @@
 package com.witch.pan.entity.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
+/**
+ * @author Yuuki
+ */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ShareDTO implements Serializable {
 
     @NotNull
@@ -10,27 +20,4 @@ public class ShareDTO implements Serializable {
     private Integer validType;
     private String code;
 
-    public String getFileId() {
-        return fileId;
-    }
-
-    public void setFileId(String fileId) {
-        this.fileId = fileId;
-    }
-
-    public Integer getValidType() {
-        return validType;
-    }
-
-    public void setValidType(Integer validType) {
-        this.validType = validType;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
 }

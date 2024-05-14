@@ -6,7 +6,7 @@
       </template>
       <template v-else>
         <img :src="`${modelValue.qqAvatar}`" v-if="modelValue && modelValue.qqAvatar" />
-        <img :src="`${proxy.globalInfo.avatarUrl}${modelValue.userId}?${timestamp}`" v-else />
+        <img :src="`/api/getAvatar/${modelValue.userId}?${timestamp}`" v-else />
       </template>
     </div>
     <div class="select-btn">
@@ -28,9 +28,9 @@ export default {
 }
 </script>
 <script setup>
-import { getCurrentInstance, ref } from 'vue'
-
+import {getCurrentInstance, ref} from 'vue'
 const { proxy } = getCurrentInstance()
+
 const props = defineProps({
   modelValue: {
     type: Object,
@@ -40,6 +40,7 @@ const props = defineProps({
 
 const timestamp = ref(new Date())
 const localFile = ref(null)
+
 const emit = defineEmits()
 const handleUploadFile = async (file) => {
   file = file.file

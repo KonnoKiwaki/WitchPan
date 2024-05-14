@@ -3,6 +3,7 @@ import lombok.Data;
 
 /**
  * 文件信息参数
+ * @author Yuuki
  */
 @Data
 public class FileInfoQuery {

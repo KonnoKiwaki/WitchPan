@@ -1,8 +1,18 @@
 package com.witch.pan.entity.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
+/**
+ * @author Yuuki
+ */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class MoveFileDTO implements Serializable {
 
 
@@ -11,27 +21,4 @@ public class MoveFileDTO implements Serializable {
     @NotEmpty
     private String ids; // 要移动的文件IDs
 
-    public MoveFileDTO() {
-    }
-
-    public MoveFileDTO(String filePid, String ids) {
-        this.filePid = filePid;
-        this.ids = ids;
-    }
-
-    public String getFilePid() {
-        return filePid;
-    }
-
-    public void setFilePid(String filePid) {
-        this.filePid = filePid;
-    }
-
-    public String getIds() {
-        return ids;
-    }
-
-    public void setIds(String ids) {
-        this.ids = ids;
-    }
 }

@@ -5,6 +5,9 @@ import lombok.Data;
 
 import java.io.Serializable;
 
+/**
+ * @author Yuuki
+ */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SysSettingsDTO implements Serializable {

@@ -73,6 +73,7 @@ public class FileInfoController {
         if (null != categoryEnums) {
             query.setFileCategory(categoryEnums.getCategory());
         }
+        //分页
         Page<FileInfo> pageParam = new Page<>(query.getPage(), query.getLimit());
         query.setUserId(((SessionWebUserVO) session.getAttribute(Constants.SESSION_KEY)).getId());
         query.setDeleted(FileDelFlagEnums.USING.getFlag());

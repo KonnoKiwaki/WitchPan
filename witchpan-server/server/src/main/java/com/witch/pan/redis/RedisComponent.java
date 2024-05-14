@@ -44,6 +44,7 @@ public class RedisComponent {
     public void saveFileTempSize(String userId, String fileId, Long fileSize) {
         Long currentSize = getFileTempSize(userId, fileId);
         String key = Constants.REDIS_KEY_USER_FILE_TEMP_SIZE + userId + fileId;
+        //暂存时间长点，不然超时没下完，前面暂存的就没了
         redisUtils.setex(key, currentSize + fileSize, Constants.REDIS_KEY_EXPIRE_ONE_HOUR);
     }
 

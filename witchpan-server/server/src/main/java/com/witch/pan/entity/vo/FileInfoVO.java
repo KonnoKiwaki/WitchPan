@@ -6,6 +6,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
+/**
+ * @author Yuuki
+ */
 @Data
 public class FileInfoVO {
     /**

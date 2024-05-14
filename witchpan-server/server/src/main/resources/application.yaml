@@ -8,6 +8,10 @@ server:
 
 # Spring MVC配置
 spring:
+  servlet:
+      multipart:
+        max-file-size: 10240MB
+        max-request-size: 10240MB
   mvc:
     favicon:
       enable: false

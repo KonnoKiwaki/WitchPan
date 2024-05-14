@@ -75,39 +75,44 @@ public class UserFileServiceImpl implements UserFileService {
         UploadResultVO resultVO = new UploadResultVO();
         File tempFileFolder = null;
         try {
-            // 生成文件ID
+            //生成文件id
             String fileId = fileDTO.getId();
-            if (!StringUtils.hasText(fileId)) {
-                fileId = StringTools.getRandomString(Constants.LENGTH_10);
+            if(!StringUtils.hasText(fileId)){
+                fileId = StringTools.getRandomNumber(Constants.LENGTH_10);
             }
             resultVO.setId(fileId);
 
             // 查询用户已使用空间
-            UserSpaceDTO userSpaceUse = redisComponent.getUserSpaceUse(userId);
-            if (userSpaceUse == null) {
-                userSpaceUse = getUseSpace(userId);
+            UserSpaceDTO userSpaceUse = getUseSpace(userId);
+            if(userSpaceUse.getUseSpace() + file.getSize() > userSpaceUse.getTotalSpace()){
+                throw new BizException(ResultCode.OUT_OF_SPACE);
             }
-            if (fileDTO.getChunkIndex() == 0) {
-                List<FileInfo> dbFileList = fileInfoService.list(new LambdaQueryWrapper<FileInfo>()
+
+            //第一个分片，第一个文件
+            if(fileDTO.getChunkIndex() == 0) {
+                List<FileInfo> dbFileList = fileInfoService.list(new
+                        LambdaQueryWrapper<FileInfo>()
                         .eq(FileInfo::getFileMd5, fileDTO.getFileMd5())
-                        .eq(FileInfo::getStatus, FileStatusEnums.USING.getStatus()));
-                if (!dbFileList.isEmpty()) {
+                        .eq(FileInfo::getStatus, FileStatusEnums.USING.getStatus())
+                );
+                if(!dbFileList.isEmpty()) {
                     // 服务器存在该文件，直接秒传
                     FileInfo dbFile = dbFileList.get(0);
                     // 判断文件大小
-                    if (dbFile.getFileSize() + userSpaceUse.getUseSpace() > userSpaceUse.getTotalSpace()) {
+                    if(dbFile.getFileSize() + userSpaceUse.getUseSpace() > userSpaceUse.getTotalSpace()) {
                         throw new BizException(ResultCode.OUT_OF_SPACE);
                     }
                     boolean save = fileInfoService.saveFileInfoFromFile(userId, fileId, fileDTO, dbFile);
-                    if (!save) {
+                    if(!save) {
                         throw new BizException("文件保存失败");
                     }
                     resultVO.setStatus(UploadStatusEnums.UPLOAD_SECONDS.getCode());
-                    // 更新空间使用情况
+                    //更新空间使用情况
                     updateUserSpace(userId, dbFile.getFileSize(), userSpaceUse);
                     return resultVO;
                 }
             }
+
             // 判断磁盘空间
             Long currentTempSize = redisComponent.getFileTempSize(userId, fileId);
             if (file.getSize() + currentTempSize + userSpaceUse.getUseSpace() > userSpaceUse.getTotalSpace()) {
@@ -122,10 +127,11 @@ public class UserFileServiceImpl implements UserFileService {
                 tempFileFolder.mkdirs();
             }
             File newFile = new File(tempFileFolder.getPath() + "/" + fileDTO.getChunkIndex());
+            //文件上传到目录中
             file.transferTo(newFile);
             if (fileDTO.getChunkIndex() < fileDTO.getChunks() - 1) {
                 resultVO.setStatus(UploadStatusEnums.UPLOADING.getCode());
-                // 保存临时大小
+                // 保存临时大小 也就是分片上传的大小
                 redisComponent.saveFileTempSize(userId, fileId, file.getSize());
                 return resultVO;
             }

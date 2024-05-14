@@ -1,5 +1,17 @@
 package com.witch.pan.entity.enums;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+;
+
+/**
+ * @author Yuuki
+ */
+
+
+@Getter
 public enum FileCategoryEnums {
 
     VIDEO(1, "video", "视频"),
@@ -10,10 +22,12 @@ public enum FileCategoryEnums {
 
     private final Integer category;
     private final String code;
+    private final String desc;
 
     FileCategoryEnums(Integer category, String code, String desc) {
         this.category = category;
         this.code = code;
+        this.desc = desc;
     }
 
     public static FileCategoryEnums getByCode(String code) {
@@ -25,11 +39,4 @@ public enum FileCategoryEnums {
         return null;
     }
 
-    public Integer getCategory() {
-        return category;
-    }
-
-    public String getCode() {
-        return code;
-    }
 }

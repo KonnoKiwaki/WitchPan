@@ -1,5 +1,6 @@
 <template>
   <div class="login-body">
+    <MeteorMod  :rainNumber="7" :rotateDeg="60" :w="1" :h="140"></MeteorMod>
 <!--    <div class="bg"></div>-->
     <div class="login-panel">
       <el-form :model="formData" :rules="rules" ref="loginFormRef" class="login-register">
@@ -166,6 +167,7 @@ import { PageEnum } from '@/enums/pageEnum'
 import { UserOutlined, MailOutlined, LockOutlined, SafetyCertificateOutlined } from '@vicons/antd'
 import { useRoute, useRouter } from 'vue-router'
 import axios from "axios";
+import MeteorMod from "@/components/MeteorMod.vue";
 
 const route = useRoute()
 const router = useRouter()
@@ -379,8 +381,8 @@ const doSubmit = () => {
   }
 
   .login-panel {
-    width: 360px;
-    margin-left: 63%;
+    width: 550px;
+    margin-right: 15%;
     margin-top: calc((100vh - 500px) / 2);
 
     .login-register {
