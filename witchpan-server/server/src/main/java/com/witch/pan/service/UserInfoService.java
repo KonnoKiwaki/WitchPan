@@ -51,4 +51,5 @@ public interface UserInfoService extends IService<UserInfo> {
     Boolean updateUserSpace(String userId, Long useSpace, Long totalSpace);
 
     SessionWebUserVO qqLogin(String code);
+
 }

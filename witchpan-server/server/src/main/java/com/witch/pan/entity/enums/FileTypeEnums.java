@@ -15,10 +15,10 @@ public enum FileTypeEnums {
     PDF(FileCategoryEnums.DOC, 4, new String[]{".pdf"}, "pdf"),
     WORD(FileCategoryEnums.DOC, 5, new String[]{".doc", ".docx"}, "word"),
     EXCEL(FileCategoryEnums.DOC, 6, new String[]{".xlsx", ".excel"}, "excel"),
-    TXT(FileCategoryEnums.DOC, 7, new String[]{".txt"}, "文本"),
+    TXT(FileCategoryEnums.DOC, 7, new String[]{".txt"}, "txt文本"),
     CODE(FileCategoryEnums.DOC, 8, new String[]{".h", ".c", ".hpp", ".hxx", ".cpp", ".cc", ".c++", ".cxx", ".m", ".o", ".s", ".dll", ".cs",
             ".java", ".class", ".js", ".ts", ".css", ".scss", "vue", ".jsx", ".sql", ".md", ".json", ".html", ".xml", ".vue"}, "代码"),
-    ZIP(FileCategoryEnums.OTHER, 9, new String[]{".rar", ".zip", ".7z", ".cab", ".arj", ".lzh", ".tar", ".gz", ".ace", ".uue", "bz", ".jar", ".iso"}, "视频"),
+    ZIP(FileCategoryEnums.OTHER, 9, new String[]{".rar", ".zip", ".7z", ".cab", ".arj", ".lzh", ".tar", ".gz", ".ace", ".uue", "bz", ".jar", ".iso"}, "压缩包"),
     OTHER(FileCategoryEnums.OTHER, 10, new String[]{}, "其他");
 
     private FileCategoryEnums category;

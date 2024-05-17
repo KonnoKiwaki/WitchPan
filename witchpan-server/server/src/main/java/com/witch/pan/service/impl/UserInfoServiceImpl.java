@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.witch.common.pojo.BizException;
 import com.witch.common.utils.MD5;
 import com.witch.pan.entity.dto.*;
+import com.witch.pan.pojo.EmailCode;
 import com.witch.pan.redis.RedisComponent;
 import com.witch.pan.entity.enums.UserStatusEnum;
 import com.witch.pan.entity.config.AppConfig;
@@ -77,7 +78,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             throw new BizException("此邮箱已经存在此昵称");
         }
         //验证邮箱验证码
-        emailCodeService.checkCode(registerDto.getEmail(), registerDto.getCheckCode());
+        emailCodeService.checkCode(registerDto.getEmail(), registerDto.getEmailCode());
 
         //存放用户信息
         String userId = StringTools.getRandomNumber(Constants.LENGTH_10);
@@ -88,7 +89,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         userInfo.setPassword(MD5.encrypt(registerDto.getPassword()));
         userInfo.setUseSpace(0L);
         SysSettingsDTO sysSettingDto = redisComponent.getSysSettingDto();
-        userInfo.setTotalSpace(sysSettingDto.getUserInitSpace() * Constants.MB);
+        userInfo.setTotalSpace(sysSettingDto.getUserInitSpace() * Constants.GB);
         this.save(userInfo);
     }
 
@@ -209,6 +210,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
         return sessionWebUserVO;
     }
+
 
     private String getQqAccessToken(String code) {
         String accessToken = null;

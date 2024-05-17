@@ -1,10 +1,10 @@
 {
-  root: 'D:\\IDEA\\witchPan-front\\easypan-main\\easypan-web',
+  root: 'D:\\IDEA\\witchPan-front\\witchpan-main\\witchpan-web',
   registry: 'https://registry.npmmirror.com',
   pkgs: [
     {
       name: '',
-      version: 'D:\\IDEA\\witchPan-front\\easypan-main\\easypan-web\\@vue-office\\docx:1.1.3',
+      version: 'D:\\IDEA\\witchPan-front\\witchpan-main\\witchpan-web\\@vue-office\\docx:1.1.3',
       type: 'directory',
       alias: undefined,
       arg: [Result]
@@ -49,8 +49,8 @@
     npm_config_sharp_binary_host: 'https://cdn.npmmirror.com/binaries/sharp',
     npm_config_sharp_libvips_binary_host: 'https://cdn.npmmirror.com/binaries/sharp-libvips',
     npm_config_robotjs_binary_host: 'https://cdn.npmmirror.com/binaries/robotjs',
-    npm_rootpath: 'D:\\IDEA\\witchPan-front\\easypan-main\\easypan-web',
-    INIT_CWD: 'D:\\IDEA\\witchPan-front\\easypan-main\\easypan-web'
+    npm_rootpath: 'D:\\IDEA\\witchPan-front\\witchpan-main\\witchpan-web',
+    INIT_CWD: 'D:\\IDEA\\witchPan-front\\witchpan-main\\witchpan-web'
   },
   binaryMirrors: {
     ENVS: {
@@ -185,7 +185,7 @@
   disableFallbackStore: false,
   workspacesMap: Map(0) {},
   enableWorkspace: false,
-  workspaceRoot: 'D:\\IDEA\\witchPan-front\\easypan-main\\easypan-web',
+  workspaceRoot: 'D:\\IDEA\\witchPan-front\\witchpan-main\\witchpan-web',
   isWorkspaceRoot: true,
   isWorkspacePackage: false,
   offline: false,

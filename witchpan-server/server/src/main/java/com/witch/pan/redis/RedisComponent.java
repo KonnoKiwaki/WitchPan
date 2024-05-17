@@ -4,6 +4,7 @@ import com.witch.pan.entity.constants.Constants;
 import com.witch.pan.entity.dto.DownloadFileDTO;
 import com.witch.pan.entity.dto.SysSettingsDTO;
 import com.witch.pan.entity.dto.UserSpaceDTO;
+import com.witch.pan.entity.vo.SessionWebUserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +19,15 @@ public class RedisComponent {
     @Autowired
     private RedisUtils<Object> redisUtils;
 
-    //拿取邮件固定信息
+    public void saveToken(String token, SessionWebUserVO userVo) {
+        redisUtils.setex(Constants.REDIS_TOKEN_INFO + token, userVo, Constants.REDIS_KEY_EXPIRE_ONE_HOUR);
+    }
+
+    public SessionWebUserVO getUserToken(String token) {
+        return (SessionWebUserVO) redisUtils.get(Constants.REDIS_TOKEN_INFO + token);
+    }
+
+    //拿取邮件固定信息和用户总使用空间
     public SysSettingsDTO getSysSettingDto() {
           SysSettingsDTO sysSettingsDTO = (SysSettingsDTO)redisUtils.get(Constants.REDIS_KEY_SYS_SETTING);
           if(sysSettingsDTO == null) {
@@ -34,7 +43,7 @@ public class RedisComponent {
     }
 
     public Long getInitSpace() {
-        return getSysSettingDto().getUserInitSpace() * Constants.MB;
+        return getSysSettingDto().getUserInitSpace() * Constants.GB;
     }
 
     public UserSpaceDTO getUserSpaceUse(String userId) {

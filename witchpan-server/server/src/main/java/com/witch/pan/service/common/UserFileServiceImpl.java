@@ -17,6 +17,7 @@ import com.witch.pan.service.UserInfoService;
 import com.witch.pan.service.impl.FileInfoServiceImpl;
 import com.witch.pan.utils.StringTools;
 import org.apache.commons.io.FileUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -30,6 +31,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * @author Yuuki
+ */
 @Service
 public class UserFileServiceImpl implements UserFileService {
 
@@ -135,6 +139,7 @@ public class UserFileServiceImpl implements UserFileService {
                 redisComponent.saveFileTempSize(userId, fileId, file.getSize());
                 return resultVO;
             }
+            //只有一个分片, 或者最后一个分片走这里
             redisComponent.saveFileTempSize(userId, fileId, file.getSize());
             // 最后一个分片上传完成，记录是数据库，异步合并
             // 写入数据库
@@ -147,6 +152,7 @@ public class UserFileServiceImpl implements UserFileService {
 
             String finalFileId = fileId;
             // 异步合并
+            //注册了一个事务同步回调，这个回调会在当前事务提交后被执行。
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
                 @Override
                 public void afterCommit() {
@@ -158,7 +164,7 @@ public class UserFileServiceImpl implements UserFileService {
             if (tempFileFolder != null) {
                 FileUtils.deleteDirectory(tempFileFolder);
             }
-            throw e;
+            throw new BizException("文件上传失败");
         }
     }
 

@@ -94,7 +94,7 @@ const L = n => `__PRODUCTION__${n.VITE_GLOB_APP_SHORT_NAME || "__APP"}__CONF__`.
 function P() {
     const n = L({
         VITE_PORT: "80",
-        VITE_GLOB_APP_TITLE: "EasyPan",
+        VITE_GLOB_APP_TITLE: "WitchPan",
         VITE_GLOB_APP_SHORT_NAME: "魔女云盘",
         BASE_URL: "/",
         MODE: "production",

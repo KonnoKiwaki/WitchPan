@@ -422,7 +422,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
             // 文件缩略图
             if (FileTypeEnums.VIDEO.getType().equals(fileType)) {
                 cutFile4Video(fileId, targetFilePath);
-                // 视频缩略图
+                // 视频缩略图 封面
                 cover = month + "/" + currentUserFolderName + Constants.IMAGE_PNG_SUFFIX;
                 String coverPath = targetFolderName + "/" + cover;
                 FfmpegUtil.createTargetThumbnail(new File(targetFilePath), Constants.LENGTH_150, new File(coverPath));
@@ -487,20 +487,30 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
         }
         File[] files = dir.listFiles();
         File targetFile = new File(toFilePath);
+        //这个类可以自由读写文件，在任意位置读写
         RandomAccessFile writeFile = null;
         try {
             writeFile = new RandomAccessFile(targetFile, "rw");
+            //设置10kb缓冲区
             byte[] b = new byte[1024 * 10];
             for (int i = 0; i < files.length; i++) {
                 int len = -1;
                 File chunkFile = new File(dirPath + "/" + i);
-                try (RandomAccessFile readFile = new RandomAccessFile(chunkFile, "r")) {
+                RandomAccessFile readFile = null;
+                try {
+                    readFile = new RandomAccessFile(chunkFile, "r");
+                    //对每个分片文件进行每次读取10kb，如果不为空就写入目标文件
+                    //读取的数据存放b中，返回读取的字节数量
                     while ((len = readFile.read(b)) != -1) {
                         writeFile.write(b, 0, len);
                     }
                 } catch (Exception e) {
                     log.error("合并分片失败", e);
                     throw new BizException("合并分片失败");
+                } finally {
+                    if (readFile != null) {
+                        readFile.close();
+                    }
                 }
             }
         } catch (Exception e) {
@@ -545,10 +555,10 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
 
     /**
      * 视频文件切片
-     *
      * @param fileId        文件ID
      * @param videoFilePath 分片到目录
      */
+    //例如一个mp4文件，先转换为ts文件，然后切割，最后删除ts文件
     private void cutFile4Video(String fileId, String videoFilePath) {
         // 创建同名切片目录
         File tsFolder = new File(videoFilePath.substring(0, videoFilePath.lastIndexOf(".")));

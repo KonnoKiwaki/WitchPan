@@ -55,6 +55,7 @@ public class LoginAspect {
         }
         HttpServletRequest request = requestAttributes.getRequest();
         HttpSession session = request.getSession();
+
         SessionWebUserVO userVo = (SessionWebUserVO) session.getAttribute(Constants.SESSION_KEY);
         if (null == userVo) {
             throw new BizException(ResultCode.LOGIN_AUTH_FAIL);

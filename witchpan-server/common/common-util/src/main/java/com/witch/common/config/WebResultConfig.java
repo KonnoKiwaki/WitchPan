@@ -2,9 +2,13 @@ package com.witch.common.config;
 
 import com.witch.common.interceptor.ResponseResultInterceptor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * @author Yuuki
+ */
 @Configuration
 public class WebResultConfig implements WebMvcConfigurer {
 
@@ -15,5 +19,7 @@ public class WebResultConfig implements WebMvcConfigurer {
         registry.addInterceptor(interceptor);
         WebMvcConfigurer.super.addInterceptors(registry);
     }
+
+
 }
 

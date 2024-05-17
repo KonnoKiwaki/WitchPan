@@ -96,9 +96,15 @@
                 <!-- 文件夹 -->
                 <Icon v-else="row.folderType == 1" :file-type="0" />
               </template>
+
+
+
               <span class="file-name" v-if="!row.showEdit">
                 <span class="text" @click.stop="openFile(row)">{{ row.filename }}</span>
+                <span v-if="row.status == 0" class="transfer-status">转码中</span>
+                <span v-if="row.status == 1" class="transfer-status transfer-fail">转码失败</span>
               </span>
+
               <!-- 编辑框 -->
               <div class="edit-panel" v-if="row.showEdit" @click.stop="">
                 <el-input

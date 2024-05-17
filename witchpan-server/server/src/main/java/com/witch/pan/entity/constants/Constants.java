@@ -19,6 +19,7 @@ public class Constants {
     public static final String AVATAR_DEFAULT = "default_avatar.jpg";
 
     public static final Long MB = 1024 * 1024L;
+    public static final Long GB = 1024 * 1024 * 1024L;
 
     public static final Integer REDIS_KEY_EXPIRE_ONE_DAY= 60 * 60 * 24;
     public static final Integer REDIS_KEY_EXPIRE_ONE_HOUR = 60 * 60;
@@ -26,6 +27,7 @@ public class Constants {
     public static final String REDIS_KEY_SYS_SETTING = "witchpan:syssetting:";
     public static final String REDIS_KEY_USER_SPACE_USE = "witchpan:user:spaceuse:";
     public static final String REDIS_KEY_USER_FILE_TEMP_SIZE = "witchpan:user:file:temp:";
+    public static final String REDIS_TOKEN_INFO = "witchpan:user:token:info:";
     public static final String REDIS_KEY_DOWNLOAD = "witchpan:download:";
     public static final String SESSION_KEY = "session_key";
     public static final String TS_NAME = "index.ts";

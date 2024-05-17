@@ -27,6 +27,11 @@
       width: 100%;
       overflow: hidden;
       text-overflow: ellipsis;
+      .transfer-status {
+        font-size: 13px;
+        margin-left: 10px;
+        color: #e6a23c;
+      }
 
       .text {
         max-width: 100%;

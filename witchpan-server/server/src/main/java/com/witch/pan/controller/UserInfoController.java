@@ -13,12 +13,15 @@ import com.witch.pan.entity.constants.Constants;
 import com.witch.pan.entity.vo.SessionWebUserVO;
 import com.witch.pan.pojo.UserInfo;
 import com.witch.pan.redis.RedisComponent;
+import com.witch.pan.redis.RedisUtils;
 import com.witch.pan.service.EmailCodeService;
 import com.witch.pan.service.UserInfoService;
 import com.witch.pan.service.common.UserFileService;
 import com.witch.pan.utils.StringTools;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,6 +38,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * <p>
@@ -57,6 +61,8 @@ public class UserInfoController {
     AppConfig appConfig;
     @Autowired
     private RedisComponent redisComponent;
+    @Autowired
+    private RedisUtils redisUtils;
 
     public UserInfoController(UserInfoService userInfoService, EmailCodeService emailCodeService, UserFileService userFileService) {
         this.userInfoService = userInfoService;
@@ -79,10 +85,10 @@ public class UserInfoController {
 
         String code = vCode.getCode();
         if (type == null || type == 0) {
-            //登陆时候的验证码
+            //普通验证码
             session.setAttribute(Constants.CHECK_CODE_KEY, code);
         } else {
-            //注册时候的验证码
+            //邮箱验证码
             session.setAttribute(Constants.CHECK_CODE_KEY_EMAIL, code);
         }
         vCode.write(response.getOutputStream());
@@ -109,7 +115,8 @@ public class UserInfoController {
                 }
             }
             emailCodeService.sendEmailCode(email, type);
-        } finally {
+        }
+        finally {
             session.removeAttribute(Constants.CHECK_CODE_KEY_EMAIL);
         }
     }
@@ -117,12 +124,12 @@ public class UserInfoController {
     @PostMapping("/register")
     public void register(HttpSession session, @Valid @RequestBody RegisterDTO registerDto) {
         try {
-            if(!registerDto.getCheckCode().equalsIgnoreCase((String) session.getAttribute(Constants.CHECK_CODE_KEY_EMAIL))) {
+            if(!registerDto.getCheckCode().equalsIgnoreCase((String) session.getAttribute(Constants.CHECK_CODE_KEY))) {
                 throw new BizException("图片验证码错误");
             }
             userInfoService.register(registerDto);
         } finally {
-            session.removeAttribute(Constants.CHECK_CODE_KEY_EMAIL);
+            session.removeAttribute(Constants.CHECK_CODE_KEY);
         }
     }
 
@@ -136,6 +143,7 @@ public class UserInfoController {
             //存放登陆效验所需要的信息
             SessionWebUserVO sessionWebUserVO = userInfoService.login(loginDto.getEmail(), loginDto.getPassword());
             session.setAttribute(Constants.SESSION_KEY, sessionWebUserVO);
+
             return sessionWebUserVO;
 
         } finally {
