@@ -1,9 +1,14 @@
 package com.witch.pan.service;
 
+import com.witch.pan.entity.query.BaseParam;
 import com.witch.pan.entity.vo.SessionWebUserVO;
 import com.witch.pan.entity.dto.RegisterDTO;
+import com.witch.pan.entity.vo.UserInfoVO;
+import com.witch.pan.pojo.FileInfo;
 import com.witch.pan.pojo.UserInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -51,5 +56,7 @@ public interface UserInfoService extends IService<UserInfo> {
     Boolean updateUserSpace(String userId, Long useSpace, Long totalSpace);
 
     SessionWebUserVO qqLogin(String code);
+
+    List<UserInfoVO> loadUserList(BaseParam baseParam);
 
 }

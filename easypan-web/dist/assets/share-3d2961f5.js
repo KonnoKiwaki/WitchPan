@@ -1,1 +1,0 @@
-import{h as r}from"./Dialog-65b9ab6b.js";const s="/share";function a(e){return r.request({url:`${s}/loadShareList/`,method:"GET",params:e})}function o(e){return r.request({url:`${s}/shareFile`,method:"POST",data:e},{successMessageText:"分享成功"})}export{a as l,o as s};

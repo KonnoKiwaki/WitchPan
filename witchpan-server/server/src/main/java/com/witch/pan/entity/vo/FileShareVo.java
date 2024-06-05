@@ -7,6 +7,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * @author Yuuki
+ */
 @Data
 public class FileShareVo implements Serializable {
 
@@ -21,7 +24,20 @@ public class FileShareVo implements Serializable {
      * 文件ID
      */
     private String fileId;
+    /**
+     * 文件名
+     */
+    private String filename;
+    /**
+     * 文件封面
+     */
+    private String cover;
 
+    private Integer fileType;
+
+    private Integer folderType;
+
+    private Integer status;
     /**
      * 用户ID
      */

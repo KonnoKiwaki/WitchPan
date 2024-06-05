@@ -30,6 +30,7 @@ public class Constants {
     public static final String REDIS_TOKEN_INFO = "witchpan:user:token:info:";
     public static final String REDIS_KEY_DOWNLOAD = "witchpan:download:";
     public static final String SESSION_KEY = "session_key";
+    public static final String SESSION_SHARE_KEY = "session_share_key";
     public static final String TS_NAME = "index.ts";
     public static final String M3U8_NAME = "index.m3u8";
     public static final String VIEW_OBJ_RESULT_KEY = "result";

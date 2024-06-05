@@ -14,9 +14,11 @@ import com.witch.pan.entity.query.FileInfoQuery;
 import com.witch.pan.entity.vo.FileInfoVO;
 import com.witch.pan.pojo.FileInfo;
 import com.witch.pan.mapper.FileInfoMapper;
+import com.witch.pan.pojo.UserInfo;
 import com.witch.pan.redis.RedisComponent;
 import com.witch.pan.service.FileInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.witch.pan.service.UserInfoService;
 import com.witch.pan.utils.FfmpegUtil;
 import com.witch.pan.utils.StringTools;
 import lombok.extern.slf4j.Slf4j;
@@ -117,30 +119,35 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
     /**
      * 获取文件路径
      *
-     * @param id     文件ID
+     * @param fileId 文件ID
      * @param userId 用户ID
      */
     @Override
-    public String getFilePath(String id, String userId) {
+    public String getFilePath(String fileId, String userId) {
+        //.ts文件分片段名
         String filePath = null;
-        if (id.endsWith(".ts")) {
-            String[] tsArray = id.split("_");
-            String realFileId = tsArray[0];
-            FileInfo fileInfo = this.getOne(new LambdaQueryWrapper<FileInfo>().eq(FileInfo::getId, realFileId).eq(FileInfo::getUserId, userId));
+        if(fileId.endsWith(".ts")) {
+            String[] arrays = fileId.split("_");
+            String readFileId = arrays[0];
+            FileInfo fileInfo = getOne(new LambdaQueryWrapper<FileInfo>().eq(FileInfo::getId, readFileId).eq(FileInfo::getUserId, userId));
+            //视频文件夹路径.mp4
             String fileName = appConfig.getProjectFolder() + Constants.FILE_FOLDER_FILE + fileInfo.getFilePath();
             String folderPath = StringTools.getFilename(fileName);
-            filePath = folderPath + "/" + id;
+            //文件路径
+            filePath = folderPath + "/" + fileId;
         } else {
-            FileInfo fileInfo = this.getOne(new LambdaQueryWrapper<FileInfo>().eq(FileInfo::getId, id).eq(FileInfo::getUserId, userId));
-            if (null == fileInfo) {
+            //第一个发送的.m3u8文件名
+            FileInfo fileInfo = getOne(new LambdaQueryWrapper<FileInfo>().eq(FileInfo::getId, fileId).eq(FileInfo::getUserId, userId));
+            if(fileInfo == null) {
                 throw new BizException("文件不存在");
             }
-            if (FileCategoryEnums.VIDEO.getCategory().equals(fileInfo.getFileCategory())) {
+            if(FileCategoryEnums.VIDEO.getCategory().equals(fileInfo.getFileCategory())) {
                 String fileName = appConfig.getProjectFolder() + Constants.FILE_FOLDER_FILE + fileInfo.getFilePath();
                 String folderPath = StringTools.getFilename(fileName);
                 filePath = folderPath + "/" + Constants.M3U8_NAME;
             } else {
-                filePath = appConfig.getProjectFolder() + Constants.FILE_FOLDER_FILE + fileInfo.getFilePath();
+                //图片路径
+                 filePath = appConfig.getProjectFolder() + Constants.FILE_FOLDER_FILE + fileInfo.getFilePath();
             }
         }
         return filePath;
@@ -148,7 +155,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
 
     @Override
     public FileInfoVO newFolder(NewFolderDTO folderDTO, String userId) {
-        // 校验文件夹名
+        // 校验文件夹名是否重复
         String rename = autoRename(folderDTO.getFilePid(), userId, folderDTO.getFilename());
         // 构造属性
         FileInfo fileInfo = new FileInfo();
@@ -168,7 +175,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
 
     /**
      * 根据ids获取目录信息
-     *
+     * 面包栏显示的路径
      * @param ids ids
      */
     @Override
@@ -204,11 +211,14 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
         if (FileFolderTypeEnums.FILE.getType().equals(fileInfo.getFolderType())) {
             filename = filename + StringTools.getFileSuffix(fileInfo.getFilename());
         }
+        //验证文件名是否存在
         String rename = autoRename(fileInfo.getFilePid(), userId, filename);
         FileInfo dbFile = new FileInfo();
         dbFile.setFilename(rename);
+        //修改数据库
         Boolean update = updateByMultiId(dbFile, renameFileDTO.getId(), userId);
         if (update) {
+            //修改当前对象名
             fileInfo.setFilename(rename);
             fileInfo.setUpdateTime(LocalDateTime.now());
         }
@@ -225,11 +235,15 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
      */
     @Override
     public void changeFileFolder(String userId, MoveFileDTO moveFileDTO) {
+        //这个pid是文件夹里面文件的pid
         String filePid = moveFileDTO.getFilePid();
+        //这是文件的id
         String ids = moveFileDTO.getIds();
+        //这里前端做判断，这里一般不会走，前端判断文件是否在当前目录下
         if (ids.equals(filePid)) {
             throw new BizException("不能将文件移动到自身目录下");
         }
+        //防止假数据传输
         if (!Constants.ZERO_STR.equals(filePid)) {
             // 不在根目录
             FileInfo fileInfo = getByMultiId(filePid, userId);
@@ -237,7 +251,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
                 throw new BizException("正在尝试非法移动");
             }
         }
-        // 查询Pid下的文件
+        // 查询Pid下的文件 名字:数据
         List<FileInfo> dbFile = list(new LambdaQueryWrapper<FileInfo>().eq(FileInfo::getFilePid, filePid).eq(FileInfo::getUserId, userId));
         Map<String, FileInfo> dbFilenameMap = dbFile.stream().collect(Collectors.toMap(FileInfo::getFilename, Function.identity(), (a, b) -> b));
         // 查询选中的文件
@@ -268,13 +282,13 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
      */
     @Override
     public String createDownloadUrl(String userId, String id) {
-        // 防小人
+        // 查询文件信息
         FileInfo fileInfo = getByMultiId(id, userId);
         if (fileInfo == null) {
             throw new BizException(ResultCode.PARAM_IS_INVALID);
         }
         if (FileFolderTypeEnums.FOLDER.getType().equals(fileInfo.getFolderType())) {
-            throw new BizException(ResultCode.PARAM_IS_INVALID);
+            throw new BizException("不允许下载文件夹");
         }
         String code = StringTools.getRandomString(Constants.LENGTH_50);
         DownloadFileDTO fileDTO = new DownloadFileDTO();
@@ -350,7 +364,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
         ArrayList<String> delFileSubFolderFileIdList = new ArrayList<>();
         for (FileInfo fileInfo : fileInfoList) {
             if (FileFolderTypeEnums.FOLDER.getType().equals(fileInfo.getFolderType())) {
-                // 查询目录下的所有文件
+                // 查询当前目录下的所有目录以及文件
                 findAllSubFolderList(delFileSubFolderFileIdList, userId, fileInfo.getId(), FileDelFlagEnums.DEL.getFlag());
             }
         }
@@ -363,6 +377,10 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
         if (!delFileSubFolderFileIdList.isEmpty()) {
             FileInfo fileInfo = new FileInfo();
             fileInfo.setDeleted(FileDelFlagEnums.USING.getFlag());
+            /*<if test="pidList != null">
+                    and file_pid in(<foreach collection="pidList" separator="," item="item">#{item}</foreach>)
+            </if>*/
+            //这个sql就是找到当前目录下的所有文件 就是遍历当前父目录pidList集合，找到有这些父目录的文件
             baseMapper.updateFileDelFlagBatch(fileInfo, userId, delFileSubFolderFileIdList, null, FileDelFlagEnums.DEL.getFlag());
         }
         // 将所选文件更新为正常，且父级目录设置为根目录
@@ -374,6 +392,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
 
         // 将所选文件重命名
         for (FileInfo info : fileInfoList) {
+            //在需要恢复的文件及目录 看看根目录下是否有相同名字的
             FileInfo rootFileInfo = rootFileMap.get(info.getFilename());
             // 文件名已存在，重命名
             if (null != rootFileInfo) {
@@ -388,6 +407,87 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
     public Boolean delFileBatch(String userId, List<String> delFilePidList, List<String> idList, Integer oldDelFlag) {
         Integer deleted = baseMapper.delFileBatch(userId, delFilePidList, idList, oldDelFlag);
         return deleted != null && deleted > 0;
+    }
+
+    /**
+     * 防止越权，瞎给pid拿取我的文件
+     * @param rootFilePid
+     * @param userId
+     * @param fileId  filepid
+     */
+
+    @Override
+    public void checkRootFilePid(String rootFilePid, String userId, String fileId) {
+        if(StringTools.isEmpty(fileId)) {
+            throw new BizException("请求参数错误");
+        }
+        if(rootFilePid.equals(fileId)) {
+            return;
+        }
+        checkFilePid(rootFilePid, fileId, userId);
+    }
+
+    @Override
+    public void saveShare(String shareRootFilePid, String shareFileIds, String myFolderId, String shareUserId, String currentUserId) {
+        //TODO 可能有问题，这里是数组，但是我现在只能接受一个数据
+        String[] shareFileIdArray = shareFileIds.split(",");
+        //查重名的文件列表
+        List<FileInfo> currentFileList = list(new LambdaQueryWrapper<FileInfo>()
+                .eq(FileInfo::getUserId, currentUserId)
+                .in(FileInfo::getFilePid, myFolderId));
+        Map<String, FileInfo> currentFileMap = currentFileList.stream().collect(Collectors.toMap(FileInfo::getFilename, Function.identity(), (a, b) -> b));
+
+        //选择的文件
+        List<FileInfo> shareFileList = list(new LambdaQueryWrapper<FileInfo>()
+                .eq(FileInfo::getUserId, shareUserId)
+                .in(FileInfo::getId, shareFileIdArray));
+        //重命名文件
+        List<FileInfo> copyFileList = new ArrayList<>();
+        for (FileInfo shareFile : shareFileList) {
+            FileInfo fileInfo = currentFileMap.get(shareFile.getFilename());
+            if(fileInfo != null) {
+                shareFile.setFilename(StringTools.rename(shareFile.getFilename()));
+            }
+            //寻找当前文件是否是文件夹，是就一直找下去把所有文件找出来
+            findAllSubFile(copyFileList, shareFile, shareUserId, currentUserId, LocalDateTime.now(), myFolderId);
+        }
+        saveBatch(copyFileList);
+
+    }
+    private void findAllSubFile(List<FileInfo> copyFileList, FileInfo fileInfo, String sourceUserId, String currentUserId, LocalDateTime curDate, String newFilePid) {
+        String sourceFileId = fileInfo.getId();
+        fileInfo.setCreateTime(curDate);
+        fileInfo.setUpdateTime(curDate);
+        fileInfo.setFilePid(newFilePid);
+        fileInfo.setUserId(currentUserId);
+        String newFileId = StringTools.getRandomString(Constants.LENGTH_10);
+        fileInfo.setId(newFileId);
+        copyFileList.add(fileInfo);
+        if(FileFolderTypeEnums.FOLDER.getType().equals(fileInfo.getFolderType())) {
+            List<FileInfo> sourceFileList = list(new LambdaQueryWrapper<FileInfo>()
+                    .eq(FileInfo::getFilePid, sourceFileId)
+                    .eq(FileInfo::getUserId, sourceUserId));
+            for(FileInfo sourceFile : sourceFileList) {
+                findAllSubFile(copyFileList, sourceFile, sourceUserId, currentUserId, curDate, newFileId);
+            }
+        }
+    }
+
+    private void checkFilePid(String rootFilePid, String fileId, String userId) {
+        FileInfo fileInfo = getOne(new LambdaQueryWrapper<FileInfo>()
+                .eq(FileInfo::getId, fileId)
+                .eq(FileInfo::getUserId, userId));
+        if(fileInfo == null) {
+            throw new BizException("请求参数错误");
+        }
+        if(Constants.ZERO_STR.equals(fileInfo.getFilePid())) {
+            throw new BizException("请求参数错误");
+        }
+        //说明我这个文件就是当前文件 上一级的父id和当前分享文件的上级父id相同
+        if(fileInfo.getFilePid().equals(rootFilePid)) {
+            return;
+        }
+        checkFilePid(rootFilePid, fileInfo.getFilePid(), userId);
     }
 
     @Async
@@ -548,7 +648,8 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
                 .eq(FileInfo::getDeleted, FileDelFlagEnums.USING.getFlag())
                 .eq(FileInfo::getFilename, filename));
         if (count > 0) {
-            filename = StringTools.rename(filename);
+            throw new BizException("此目录下存在同名文件夹，请修改名称后重试");
+            //filename = StringTools.rename(filename);
         }
         return filename;
     }
@@ -574,4 +675,6 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
         // 删除index.ts
         new File(tsPath).delete();
     }
+
+
 }

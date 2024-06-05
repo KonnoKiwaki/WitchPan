@@ -95,7 +95,7 @@ public class EmailCodeServiceImpl extends ServiceImpl<EmailCodeMapper, EmailCode
 
             //redis拿取固定邮件信息
             SysSettingsDTO sysSettingDto = redisComponent.getSysSettingDto();
-            helper.setSubject(sysSettingDto.getRegisterMailTitle());
+            helper.setSubject(sysSettingDto.getRegisterEmailTitle());
             helper.setText(String.format(sysSettingDto.getRegisterEmailContent(), code));
             helper.setSentDate(new Date());
 

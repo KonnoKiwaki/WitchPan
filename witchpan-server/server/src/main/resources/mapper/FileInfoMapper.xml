@@ -14,6 +14,9 @@
             <if test="query.filePid != null and query.filePid != ''">
                 and fi.file_pid = #{query.filePid}
             </if>
+            <if test="query.fileId != null and query.fileId != ''">
+                and fi.id = #{query.fileId}
+            </if>
             <if test="query.filename != null and query.filename != ''">
                 and fi.filename like CONCAT('%', #{query.filename}, '%')
             </if>

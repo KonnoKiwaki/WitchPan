@@ -120,6 +120,7 @@ public class FfmpegUtil {
             if (sourceW < width) {
                 return false;
             }
+            //获取图片缩略图
             compressImage(sourceFile, width, targetFile, delSource);
             return true;
         } catch (Exception e) {

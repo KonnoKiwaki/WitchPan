@@ -6,11 +6,13 @@ import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode, command}) => {
+
   const root = process.cwd();
   const env = loadEnv(mode, root);
   const viteEnv = wrapperEnv(env);
-  const { VITE_PORT, VITE_PROXY } = viteEnv;
+  const {VITE_GLOB_APP_TITLE, VITE_PORT, VITE_PROXY } = viteEnv;
   return {
+    base: './',
     plugins: [vue()],
     resolve: {
       alias: {
@@ -22,7 +24,7 @@ export default defineConfig(({ mode, command}) => {
       hmr: true,
       proxy: {
         "/api": {
-          target: "http://localhost:7090",
+          target: "http://witch.konnoyuuki.fun:7090",
           changeOrigin: true,
           PathRewrite: {
             "^api": "/api"

@@ -51,8 +51,9 @@
           <el-icon size="16"><CheckCircleFilled /> </el-icon>
           <span class="text">成功创建分享链接，访问者无需提取码可直接查看分享文件</span>
         </div>
-        <div class="link">
-          <el-input :value="shareUrl + resultInfo.id" readonly />
+        <div class="link" style="display: flex;">
+          <span class="label; out">链接码</span>
+          <el-input :value="shareUrl + resultInfo.id" readonly style="flex: 1;margin-left: 8px" />
           <div class="mask"></div>
         </div>
         <div class="link-code">
@@ -74,13 +75,14 @@ export default {
 }
 </script>
 <script setup>
-import { reactive, ref, nextTick } from 'vue'
+import { reactive, ref, nextTick, toRaw } from 'vue'
 import Dialog from '@/components/Dialog.vue'
 import useClipboard from 'vue-clipboard3'
 import { ExclamationCircleOutlined, CheckCircleFilled } from '@vicons/antd'
 import { ElMessage } from 'element-plus'
 import { isArray } from '@/utils/is'
 import { shareFileApi } from '@/api/share'
+
 
 const validOption = [
   { label: '0', value: '1天' },
@@ -99,7 +101,7 @@ const tips = reactive({
   type: 'info',
   msg: '仅支持数字及英文字母'
 })
-const shareUrl = ref(document.location.origin + '/share/')
+const shareUrl = ref(document.location.origin + '/shareCheck/')
 const resultInfo = reactive({})
 const shareForm = reactive({
   validType: '1',
@@ -132,7 +134,7 @@ const dialogConfig = reactive({
 })
 
 function show(data) {
-  if (isArray(data)) return
+  if (!isArray(data)) return
   showType.value = 0
   dialogConfig.show = true
   nextTick(() => {
@@ -141,8 +143,13 @@ function show(data) {
     dialogConfig.buttons[0].isShow = true
     dialogConfig.buttons[1].isShow = false
   })
-  dialogConfig.title = '分享文件: ' + data.filename
-  currentFile.value = data
+  if(data.length > 1) {
+    dialogConfig.title = '分享文件: ' + '整合包分享'
+  } else {
+    dialogConfig.title = '分享文件: ' + data[0].filename
+  }
+  //TODO 改成集合形式，后端需要全改成list
+  currentFile.value = data[0]
 }
 
 function clearValidStatus() {
@@ -170,6 +177,7 @@ const createShareLink = async () => {
   }
   try {
     const res = await shareFileApi(param)
+
     if (!res) return
     Object.assign(resultInfo, res)
     showType.value = 1
@@ -224,6 +232,10 @@ defineExpose({ show })
         border-radius: 4px;
         background: linear-gradient(90deg, rgba(245, 246, 250, 0.0001) -5.23%, #fff 82.68%);
       }
+    }
+    .out{
+      font-size: 12px;
+      margin-top: 7px;
     }
     .link-code {
       margin-top: 16px;

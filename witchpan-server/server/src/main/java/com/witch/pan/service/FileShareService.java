@@ -2,6 +2,7 @@ package com.witch.pan.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.witch.pan.entity.dto.SessionShareDTO;
 import com.witch.pan.entity.vo.FileShareVo;
 import com.witch.pan.pojo.FileShare;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -21,4 +22,6 @@ public interface FileShareService extends IService<FileShare> {
     FileShare saveShare(FileShare fileShare);
 
     void deleteShareBatch(String shareIds, String userId);
+
+    SessionShareDTO checkShareCode(String shareId, String code);
 }

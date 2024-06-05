@@ -6,10 +6,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.witch.common.pojo.BizException;
 import com.witch.common.pojo.ResultCode;
 import com.witch.pan.entity.constants.Constants;
+import com.witch.pan.entity.dto.SessionShareDTO;
 import com.witch.pan.entity.enums.ShareValidTypeEnums;
 import com.witch.pan.entity.vo.FileShareVo;
+import com.witch.pan.pojo.FileInfo;
 import com.witch.pan.pojo.FileShare;
 import com.witch.pan.mapper.FileShareMapper;
+import com.witch.pan.pojo.UserInfo;
 import com.witch.pan.service.FileShareService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.witch.pan.utils.StringTools;
@@ -33,16 +36,32 @@ import java.util.stream.Collectors;
 @Service
 public class FileShareServiceImpl extends ServiceImpl<FileShareMapper, FileShare> implements FileShareService {
 
+    private final UserInfoServiceImpl userInfoServiceImpl;
+    private final FileInfoServiceImpl fileInfoServiceImpl;
+
+    public FileShareServiceImpl(UserInfoServiceImpl userInfoServiceImpl, FileInfoServiceImpl fileInfoServiceImpl) {
+        this.userInfoServiceImpl = userInfoServiceImpl;
+        this.fileInfoServiceImpl = fileInfoServiceImpl;
+    }
+
     @Override
     public IPage<FileShareVo> pageInfo(Page<FileShare> pageParam, String userId) {
-        LambdaQueryWrapper<FileShare> wrapper = new LambdaQueryWrapper();
+        LambdaQueryWrapper<FileShare> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(FileShare::getUserId, userId).orderByDesc(FileShare::getCreateTime);
         IPage<FileShare> iPage = this.page(pageParam, wrapper);
         List<FileShare> records = iPage.getRecords();
-
         List<FileShareVo> fileShareVos = records.stream().map(item -> {
+            FileInfo fileInfo = fileInfoServiceImpl.getById(item.getFileId());
             FileShareVo fileShareVo = new FileShareVo();
             BeanUtils.copyProperties(item, fileShareVo);
+            if(fileInfo.getFilename().length() > 20){
+                fileShareVo.setFilename(fileInfo.getFilename().substring(0, 20) + StringTools.getFileSuffix(fileInfo.getFilename()));
+            } else {
+                fileShareVo.setFilename(fileInfo.getFilename());
+            }
+            fileShareVo.setCover(fileInfo.getFileCover());
+            fileShareVo.setFileType(fileInfo.getFileType());
+            fileShareVo.setFolderType(fileInfo.getFolderType());
             return fileShareVo;
         }).collect(Collectors.toList());
 
@@ -57,6 +76,7 @@ public class FileShareServiceImpl extends ServiceImpl<FileShareMapper, FileShare
         if (null == typeEnums) {
             throw new BizException(ResultCode.PARAM_IS_INVALID);
         }
+        //有期限时间
         if (ShareValidTypeEnums.FOREVER != typeEnums) {
             fileShare.setExpireTime(LocalDateTime.now().plusDays(typeEnums.getDays()));
         }
@@ -74,5 +94,25 @@ public class FileShareServiceImpl extends ServiceImpl<FileShareMapper, FileShare
         List<String> ids = Arrays.asList(shareIds.split(","));
         wrapper.in(FileShare::getId, ids);
         remove(wrapper);
+    }
+
+    @Override
+    public SessionShareDTO checkShareCode(String shareId, String code) {
+        FileShare share = getById(shareId);
+        if (share == null || (share.getExpireTime() != null && LocalDateTime.now().isAfter(share.getExpireTime()))) {
+            throw new BizException("分享文件已失效或不存在");
+        }
+        if(!share.getCode().equals(code)) {
+            throw new BizException("提取码错误");
+        }
+        //更新浏览次数
+        share.setBrowseCount(share.getBrowseCount() + 1);
+        updateById(share);
+        SessionShareDTO sessionShareDTO = new SessionShareDTO();
+        sessionShareDTO.setShareId(shareId);
+        sessionShareDTO.setShareUserId(share.getUserId());
+        sessionShareDTO.setFileId(share.getFileId());
+        sessionShareDTO.setExpireTime(share.getExpireTime());
+        return sessionShareDTO;
     }
 }

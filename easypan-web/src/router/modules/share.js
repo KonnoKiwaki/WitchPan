@@ -27,7 +27,7 @@ const routes = [
         component: () => import('@/views/share/share.vue')
       }
     ]
-  }
+  },
 ]
 
 export default routes

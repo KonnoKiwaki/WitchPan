@@ -11,8 +11,8 @@
         <span class="item-sep">></span>
       </span>
       <span
-        v-for="(item, index) in folderList"
-        :class="['nav-item', index < folderList.length - 1 ? '' : 'is-disable-nav']"
+          v-for="(item, index) in folderList"
+          :class="['nav-item', index < folderList.length - 1 ? '' : 'is-disable-nav']"
       >
         <span class="item-title text-ellip" @click="folderSwitch(index)">{{ item.filename }}</span>
         <span class="item-sep">></span>
@@ -95,43 +95,45 @@ const getNavigationFolder = async (path) => {
 
 function init() {
   folderList.value = []
-  ;(currentFolder = { id: '0' }), navChange()
+  ;(currentFolder = {id: '0'}), navChange()
 }
+
 function navChange() {
   emit('nav-change', {
     category,
     curFolder: currentFolder
   })
 }
+
 watch(
-  () => route,
-  (newVal, oldValue) => {
-    if (!props.watchPath) {
-      return
-    }
-    if (newVal.path.indexOf('/index') === -1 && newVal.path.indexOf('/settings/files') === -1) {
-      return
-    }
-    const path = newVal.query.path
-    category = newVal.params.category
-    if (path == undefined) {
-      init()
-    } else {
-      if (folderList.value.length === 0) {
-        // 没有目录信息，发请求获取
-        getNavigationFolder(path)
+    () => route,
+    (newVal, oldValue) => {
+      if (!props.watchPath) {
+        return
       }
-      let pathArray = path.split('/')
-      currentFolder = {
-        id: pathArray[pathArray.length - 1]
+      if (newVal.path.indexOf('/index') === -1 && newVal.path.indexOf('/settings/files') === -1) {
+        return
       }
-      navChange()
-    }
-  },
-  { immediate: true, deep: true }
+      const path = newVal.query.path
+      category = newVal.params.category
+      if (path == undefined) {
+        init()
+      } else {
+        if (folderList.value.length === 0) {
+          // 没有目录信息，发请求获取
+          getNavigationFolder(path)
+        }
+        let pathArray = path.split('/')
+        currentFolder = {
+          id: pathArray[pathArray.length - 1]
+        }
+        navChange()
+      }
+    },
+    {immediate: true, deep: true}
 )
 
-defineExpose({ openFolder, init })
+defineExpose({openFolder, init})
 </script>
 <style lang="scss" scoped>
 .nav-list {
@@ -139,8 +141,10 @@ defineExpose({ openFolder, init })
     font-size: 12px;
     font-weight: 700;
   }
+
   .nav-item {
     font-size: 14px;
+
     .item-title {
       color: #06a7ff;
       max-width: 120px;
@@ -149,6 +153,7 @@ defineExpose({ openFolder, init })
       vertical-align: middle;
       font-size: 12px;
     }
+
     .item-sep {
       margin: 0 5px;
       color: #c4d8f4;
@@ -156,11 +161,13 @@ defineExpose({ openFolder, init })
       vertical-align: middle;
     }
   }
+
   .nav-item.is-disable-nav {
     .item-title {
       color: #818999;
       cursor: auto;
     }
+
     .item-sep {
       display: none;
     }

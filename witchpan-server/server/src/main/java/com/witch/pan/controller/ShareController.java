@@ -50,11 +50,13 @@ public class ShareController {
         return fileShareService.pageInfo(pageParam, userId);
     }
 
+    //TODO 改成集合形式
     @PostMapping("/shareFile")
     public FileShare shareFile(HttpSession session, @RequestBody ShareDTO shareDTO) {
         String userId = ((SessionWebUserVO) session.getAttribute(Constants.SESSION_KEY)).getId();
         FileShare fileShare = new FileShare();
         fileShare.setUserId(userId);
+        fileShare.setFileId(shareDTO.getFileId());
         BeanUtils.copyProperties(shareDTO, fileShare);
         return fileShareService.saveShare(fileShare);
     }
@@ -64,5 +66,7 @@ public class ShareController {
         String userId = ((SessionWebUserVO) session.getAttribute(Constants.SESSION_KEY)).getId();
         fileShareService.deleteShareBatch(shareIds, userId);
     }
+
+    
 }
 

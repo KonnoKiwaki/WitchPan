@@ -1,5 +1,12 @@
 package com.witch.pan.entity.enums;
 
+import lombok.Getter;
+
+/**
+ * @author Yuuki
+ */
+
+@Getter
 public enum ShareValidTypeEnums {
 
     DAY_1(0, 1, "1天"),
@@ -17,6 +24,7 @@ public enum ShareValidTypeEnums {
         this.desc = desc;
     }
 
+    //遍历枚举常量
     public static ShareValidTypeEnums getByType(Integer type) {
         for (ShareValidTypeEnums typeEnums : ShareValidTypeEnums.values()) {
             if (typeEnums.getType().equals(type)) {
@@ -24,16 +32,6 @@ public enum ShareValidTypeEnums {
             }
         }
         return null;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-    public Integer getDays() {
-        return days;
-    }
-    public String getDesc() {
-        return desc;
     }
 
 }

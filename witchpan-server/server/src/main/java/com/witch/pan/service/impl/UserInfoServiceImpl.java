@@ -1,11 +1,14 @@
 package com.witch.pan.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.witch.common.pojo.BizException;
 import com.witch.common.utils.MD5;
 import com.witch.pan.entity.dto.*;
-import com.witch.pan.pojo.EmailCode;
+import com.witch.pan.entity.query.BaseParam;
+import com.witch.pan.entity.vo.UserInfoVO;
+import com.witch.pan.pojo.FileInfo;
 import com.witch.pan.redis.RedisComponent;
 import com.witch.pan.entity.enums.UserStatusEnum;
 import com.witch.pan.entity.config.AppConfig;
@@ -20,19 +23,21 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.witch.pan.utils.JsonUtils;
 import com.witch.pan.utils.OKHttpUtils;
 import com.witch.pan.utils.StringTools;
-import org.apache.catalina.User;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -211,6 +216,22 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         return sessionWebUserVO;
     }
 
+
+    @Override
+    public List<UserInfoVO> loadUserList(BaseParam userInfoQuery) {
+        Page<UserInfo> page = new Page<>(userInfoQuery.getPageNo(), userInfoQuery.getPageSize());
+        LambdaQueryWrapper<UserInfo> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.orderByDesc(UserInfo::getCreateTime);
+        IPage<UserInfo> userInfoIPage = baseMapper.selectPage(page, queryWrapper);
+        List<UserInfo> userList = userInfoIPage.getRecords();
+        List<UserInfoVO> users = userList.stream().map(item -> {
+            UserInfoVO userVO = new UserInfoVO();
+            BeanUtils.copyProperties(item, userVO);
+            return userVO;
+        }).collect(Collectors.toList());
+
+        return users;
+    }
 
     private String getQqAccessToken(String code) {
         String accessToken = null;

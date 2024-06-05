@@ -16,9 +16,12 @@ import java.io.Serializable;
 public class MoveFileDTO implements Serializable {
 
 
+    // 目标目录ID
     @NotEmpty
-    private String filePid; // 目标目录ID
+    private String filePid;
+
+    // 要移动的文件IDs
     @NotEmpty
-    private String ids; // 要移动的文件IDs
+    private String ids;
 
 }

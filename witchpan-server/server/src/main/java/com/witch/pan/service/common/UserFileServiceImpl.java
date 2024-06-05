@@ -133,14 +133,14 @@ public class UserFileServiceImpl implements UserFileService {
             File newFile = new File(tempFileFolder.getPath() + "/" + fileDTO.getChunkIndex());
             //文件上传到目录中
             file.transferTo(newFile);
+
+            // 保存临时大小 也就是分片上传的大小
+            redisComponent.saveFileTempSize(userId, fileId, file.getSize());
+
             if (fileDTO.getChunkIndex() < fileDTO.getChunks() - 1) {
                 resultVO.setStatus(UploadStatusEnums.UPLOADING.getCode());
-                // 保存临时大小 也就是分片上传的大小
-                redisComponent.saveFileTempSize(userId, fileId, file.getSize());
                 return resultVO;
             }
-            //只有一个分片, 或者最后一个分片走这里
-            redisComponent.saveFileTempSize(userId, fileId, file.getSize());
             // 最后一个分片上传完成，记录是数据库，异步合并
             // 写入数据库
             fileInfoService.saveFileInfo(userId, fileId, fileDTO);

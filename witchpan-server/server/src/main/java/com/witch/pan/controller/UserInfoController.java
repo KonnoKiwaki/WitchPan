@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -203,6 +204,10 @@ public class UserInfoController {
     @PostMapping("/logout")
     @LoginValidator
     public void logout(HttpSession session) {
+        SessionWebUserVO userVo = (SessionWebUserVO) session.getAttribute(Constants.SESSION_KEY);
+        UserInfo userInfo = userInfoService.getOne(new LambdaQueryWrapper<UserInfo>().eq(UserInfo::getId, userVo.getId()));
+        userInfo.setLastLoginTime(LocalDateTime.now());
+        userInfoService.updateById(userInfo);
         session.invalidate();
     }
 

@@ -12,7 +12,7 @@ export const columns = [
     minWidth: '25%'
   },
   {
-    label: '状态',
+    label: '操作',
     prop: 'expireTime',
     scopedSlots: 'RowAction',
     minWidth: '25%'

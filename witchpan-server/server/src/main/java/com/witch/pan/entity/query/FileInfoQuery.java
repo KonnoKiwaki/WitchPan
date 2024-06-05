@@ -27,6 +27,8 @@ public class FileInfoQuery {
      */
     private String filePid;
 
+    private String fileId;
+
     /**
      * 文件名
      */

@@ -1,0 +1,96 @@
+const createShareLink = async () => {
+  loading.value = true;
+
+  try {
+    const filesToShare = currentFile.value.map(file => ({
+      fileId: file.id,
+      validType: shareForm.validType,
+      code: shareForm.code
+    }));
+    
+    const param = {
+      userId: 'yourUserIdHere', // 从 session 获取 userId 或其他方式获取
+      files: filesToShare
+    };
+    
+    const res = await shareFileApi(param);
+
+    if (res) {
+      Object.assign(resultInfo, res);
+      showType.value = 1;
+      dialogConfig.buttons[0].isShow = false;
+      dialogConfig.buttons[1].isShow = true;
+    }
+
+    loading.value = false;
+  } catch (error) {
+    // 分享失败
+  }
+}
+
+
+@PostMapping("/shareFile")
+public List<FileShare> shareFile(HttpSession session, @RequestBody ShareRequestDTO requestDTO) {
+    String userId = ((SessionWebUserVO) session.getAttribute(Constants.SESSION_KEY)).getId();
+    
+    List<FileShare> fileShares = new ArrayList<>();
+    for (SharedFileDTO sharedFile : requestDTO.getFiles()) {
+        FileShare fileShare = new FileShare();
+        fileShare.setUserId(userId);
+        fileShare.setFileId(sharedFile.getFileId());
+        // 设置其他需要的属性
+        BeanUtils.copyProperties(sharedFile, fileShare);
+        fileShares.add(fileShareService.saveShare(fileShare));
+    }
+
+    return fileShares;
+}
+
+
+public class ShareRequestDTO {
+    private List<SharedFileDTO> files;
+
+    // 可以添加其他属性或方法
+
+    public List<SharedFileDTO> getFiles() {
+        return files;
+    }
+
+    public void setFiles(List<SharedFileDTO> files) {
+        this.files = files;
+    }
+}
+
+
+
+public class SharedFileDTO {
+    private Long fileId;
+    private String validType;
+    private String code;
+
+    // 可以添加其他属性或方法
+
+    public Long getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(Long fileId) {
+        this.fileId = fileId;
+    }
+
+    public String getValidType() {
+        return validType;
+    }
+
+    public void setValidType(String validType) {
+        this.validType = validType;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+}

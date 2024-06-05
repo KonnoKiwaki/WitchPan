@@ -93,6 +93,7 @@ import Dialog from '@/components/Dialog.vue'
 import { ElMessage } from 'element-plus'
 import { isArray } from '@/utils/is'
 import { loadShareList } from '@/api/share'
+import axios from "axios";
 
 const emit = defineEmits(['addFile'])
 const shareTableRef = ref()
@@ -100,7 +101,7 @@ const selectFiles = ref([])
 const shareIds = ref([])
 const tableDataNum = ref(0)
 const { toClipboard } = useClipboard()
-const shareUrl = ref(document.location.origin + '/share/')
+const shareUrl = ref(document.location.origin + '/shareCheck/')
 
 const actions = [
   {
@@ -167,9 +168,17 @@ const cancelShare = (data) => {
 }
 
 const deleteShare = () => {
-  ElMessage.success('取消外链分享成功')
-  reloadTable()
-  dialogConfig.show = false
+  axios.delete('/api/share/cancelShare/' + shareIds.value)
+      .then((res) => {
+        if(res.data) {
+          ElMessage.success('取消外链分享成功')
+          reloadTable()
+          dialogConfig.show = false
+        }
+      })
+      .catch((err) => {
+        ElMessage.error('取消外联分享失败')
+      })
 }
 
 const copyLink2Clipboard = async (data) => {
@@ -177,7 +186,7 @@ const copyLink2Clipboard = async (data) => {
     data = data[0]
   }
   // 链接: https://pan.baidu.com/s/1OtdlYyBNGL0NPpIiLgyG3A 提取码: 93vd
-  await toClipboard(`链接: ${shareUrl.value}${data.shareId} 提取码: ${data.code}`)
+  await toClipboard(`链接: ${shareUrl.value}${data.id} 提取码: ${data.code}`)
   ElMessage.success('复制成功')
 }
 </script>

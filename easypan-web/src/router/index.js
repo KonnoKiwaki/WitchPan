@@ -1,5 +1,5 @@
 import { PageEnum } from '@/enums/pageEnum'
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import { createRouterGuards } from './router-guards'
 const modules = import.meta.globEager('./modules/**/*.js')
 
@@ -39,10 +39,10 @@ export const LoginRoute = {
 
 export const menuRoute = [...routeModuleList]
 
-export const constantRouter = [LoginRoute, RootRoute, ...routeModuleList]
+export const constantRouter = [LoginRoute, RootRoute,...routeModuleList]
 
 const router = createRouter({
-  history: createWebHashHistory(''),
+  history: createWebHistory(''),
   routes: constantRouter,
   strict: true,
   scrollBehavior: () => ({ left: 0, top: 0 })

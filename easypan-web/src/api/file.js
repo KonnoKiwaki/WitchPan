@@ -1,5 +1,6 @@
 import { http } from '@/utils/axios'
 import { ContentTypeEnum } from '@/enums/httpEnum'
+import axios from "axios";
 const prefix = '/file'
 
 /**
@@ -57,6 +58,14 @@ export function getFolderInfo(params) {
   })
 }
 
+export function getShareFolderInfo(params) {
+    return http.request({
+        url: `/showShare/getFolderInfo`,
+        method: 'GET',
+        params
+    })
+}
+
 /**
  * @description: 修改文件名
  */
@@ -100,6 +109,19 @@ export function changeFileFolderApi(data) {
   )
 }
 
+export function changeShareFolderApi(data) {
+    return axios.put('/api/showShare/changeFileFolder', data, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(response => {
+        // 处理成功响应
+        console.log('移动成功');
+    }).catch(error => {
+        // 处理错误响应
+        console.error('移动失败', error);
+    });
+}
 /**
  * @description: 回收文件
  */

@@ -8,11 +8,9 @@
     </div>
     <div class="detail-content" v-if="selectFile">
       <div class="filename">
-        <template
-          v-if="(selectFile.fileType == 3 || selectFile.fileType == 1) && selectFile.status == 2"
-        >
+        <template v-if="selectFile.cover">
           <!-- 视频，图片，且转码成功才有封面 -->
-          <Icon :cover="selectFile.fileCover" />
+          <Icon :cover="selectFile.cover" />
         </template>
         <template v-else>
           <Icon v-if="selectFile.folderType == 0" :file-type="selectFile.fileType" />

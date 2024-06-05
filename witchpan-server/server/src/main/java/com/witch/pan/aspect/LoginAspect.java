@@ -34,8 +34,13 @@ public class LoginAspect {
     //这个方法会在当前包下的所有方法执行之前 执行  切面
     @Before("pointCut()")
     public void interceptorDo(JoinPoint point) {
+
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
+        HttpSession session = request.getSession();
+
         // 获取目标对象
-        Object target = point.getTarget();
+        //Object target = point.getTarget();
 
         // 获取方法上的LoginValidator注解
         // 获取方法签名
@@ -48,13 +53,6 @@ public class LoginAspect {
         if (loginValidator != null && !loginValidator.validated()) {
             return;
         }
-        // 登陆校验
-        ServletRequestAttributes requestAttributes = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
-        if (requestAttributes == null || requestAttributes.getResponse() == null) {
-            return;
-        }
-        HttpServletRequest request = requestAttributes.getRequest();
-        HttpSession session = request.getSession();
 
         SessionWebUserVO userVo = (SessionWebUserVO) session.getAttribute(Constants.SESSION_KEY);
         if (null == userVo) {

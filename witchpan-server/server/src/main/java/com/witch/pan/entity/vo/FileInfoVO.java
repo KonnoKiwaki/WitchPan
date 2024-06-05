@@ -31,6 +31,7 @@ public class FileInfoVO {
      */
     private String filename;
 
+
     /**
      * 文件封面
      */

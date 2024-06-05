@@ -102,7 +102,6 @@ const props = defineProps({
 })
 
 const fileTypeActions = ref(props.actions)
-
 // 处理操作
 function filterActions() {
   // 目录没有下载选项

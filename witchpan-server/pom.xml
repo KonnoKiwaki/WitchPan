@@ -10,7 +10,9 @@
     </parent>
     <groupId>com.witchpan</groupId>
     <artifactId>witchpan-server</artifactId>
+    <description>witchpan-server</description>
     <version>1</version>
+
     <packaging>pom</packaging>
     <name>witchpan-server</name>
     <modules>
@@ -111,6 +113,12 @@
                 <groupId>ws.schild</groupId>
                 <artifactId>jave-all-deps</artifactId>
                 <version>${ws.schild.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.witchpan</groupId>
+                <artifactId>common</artifactId>
+                <version>1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

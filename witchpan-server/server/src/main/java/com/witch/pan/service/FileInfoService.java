@@ -120,4 +120,8 @@ public interface FileInfoService extends IService<FileInfo> {
      * @param oldDelFlag     旧状态
      */
     Boolean delFileBatch(String userId, List<String> delFilePidList, List<String> idList, Integer oldDelFlag);
+
+    void checkRootFilePid(String rootFilePid, String userId, String fileId);
+
+    void saveShare(String shareRootFilePid, String shareFileIds, String myFolderId, String shareUserId, String currentUserId);
 }

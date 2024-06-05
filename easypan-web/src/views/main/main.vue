@@ -188,11 +188,13 @@
     <Preview ref="previewRef" />
     <DeleteFile ref="deleteFileRef" @delete-success="reloadTable" />
     <FolderSelect ref="moveFileRef" @move-success="reloadTable" />
-    <ShareFile ref="shareFileRef" />
+    <ShareFile ref="shareFileRef"/>
   </div>
 </template>
 
 <script>
+import Preview from "@/components/preview/Preview.vue";
+
 export default {
   name: 'Main',
   components: { Preview }
@@ -208,7 +210,6 @@ import { ElMessage } from 'element-plus'
 import Navigation from '@/components/Navigation.vue'
 import { loadDataList, newFolderApi, renameApi, createDownloadUrl } from '@/api/file'
 import CategorySetting from '@/settings/categorySetting'
-import Preview from '@/components/preview/Preview.vue'
 import { FileAction, ShareFile, FolderSelect, DeleteFile } from '@/components/FileAction'
 import { createActions } from './actions'
 import fileSetting from '@/settings/fileSetting'
@@ -427,6 +428,7 @@ const handleDownloadFile = async (data) => {
   if (!res) return
   window.location.href = fileUrlMap[0].downloadUrl + '/' + res.code
 }
+
 
 defineExpose({ reloadTable })
 </script>

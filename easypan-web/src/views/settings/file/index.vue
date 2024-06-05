@@ -96,6 +96,8 @@
 </template>
 
 <script>
+import Preview from "@/components/preview/Preview.vue";
+
 export default {
   name: 'Main',
   components: { Preview }

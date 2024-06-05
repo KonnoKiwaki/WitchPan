@@ -91,6 +91,7 @@ public class FileInfoController {
         return userFileService.uploadFile(user.getId(), file, fileDTO);
     }
 
+
     // 获取文件封面
     @GetMapping("/getImage/{imageFolder}/{imageName}")
     public void getImage(HttpServletResponse response,
@@ -127,10 +128,16 @@ public class FileInfoController {
         return fileInfoService.newFolder(folderDTO, user.getId());
     }
 
-    // 获取目录信息
+    /**
+     *
+     * @param session
+     * @param path  对应每一层文件夹的id
+     * @return
+     */
+    // 获取当前目录信息
     @GetMapping("/getFolderInfo")
     public List<FileInfoVO> getFolderInfo(HttpSession session, @NotEmpty String path) {
-        SessionWebUserVO user = (SessionWebUserVO) session.getAttribute(Constants.SESSION_KEY);
+        //SessionWebUserVO user = (SessionWebUserVO) session.getAttribute(Constants.SESSION_KEY);
         String[] ids = path.split("/");
         return fileInfoService.listFolderByIds(ids);
     }

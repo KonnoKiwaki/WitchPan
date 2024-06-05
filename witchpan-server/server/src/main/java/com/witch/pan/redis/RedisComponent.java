@@ -19,14 +19,6 @@ public class RedisComponent {
     @Autowired
     private RedisUtils<Object> redisUtils;
 
-    public void saveToken(String token, SessionWebUserVO userVo) {
-        redisUtils.setex(Constants.REDIS_TOKEN_INFO + token, userVo, Constants.REDIS_KEY_EXPIRE_ONE_HOUR);
-    }
-
-    public SessionWebUserVO getUserToken(String token) {
-        return (SessionWebUserVO) redisUtils.get(Constants.REDIS_TOKEN_INFO + token);
-    }
-
     //拿取邮件固定信息和用户总使用空间
     public SysSettingsDTO getSysSettingDto() {
           SysSettingsDTO sysSettingsDTO = (SysSettingsDTO)redisUtils.get(Constants.REDIS_KEY_SYS_SETTING);
@@ -35,6 +27,10 @@ public class RedisComponent {
                 redisUtils.set(Constants.REDIS_KEY_SYS_SETTING, sysSettingsDTO);
           }
           return sysSettingsDTO;
+    }
+
+    public void saveSysSettingDto(SysSettingsDTO dto) {
+        redisUtils.set(Constants.REDIS_KEY_SYS_SETTING, dto);
     }
 
     public void saveUserSpaceUse(String userId, UserSpaceDTO userSpaceDto) {
@@ -80,4 +76,6 @@ public class RedisComponent {
     public DownloadFileDTO getDownloadCode(String code) {
         return (DownloadFileDTO) redisUtils.get(Constants.REDIS_KEY_DOWNLOAD + code);
     }
+
+
 }

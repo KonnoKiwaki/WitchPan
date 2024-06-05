@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotEmpty;
 
+/**
+ * @author Yuuki
+ */
 @LoginValidator
 @Validated
 @RestController

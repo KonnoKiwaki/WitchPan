@@ -89,12 +89,15 @@ function showPreview(data, showPart) {
       _url = fileUrlMap[showPart].videoUrl
     }
     if (showPart == 0) {
-      _url = _url + '/' + data.id
-      _createDownloadUrl = _createDownloadUrl + '/' + data.id
-      downloadUrl.value = _downloadUrl
+      _url = _url + '/' + data.id;
+      _createDownloadUrl = _createDownloadUrl + '/' + data.id;
+      downloadUrl.value = _downloadUrl;
     } else if (showPart == 1) {
-      _url = _url + '/' + data.userId + '/' + data.id
-      _createDownloadUrl = _createDownloadUrl + '/' + data.userId + '/' + data.id
+      _url = _url + '/' + data.userId + '/' + data.id;
+      _createDownloadUrl = _createDownloadUrl + '/' + data.userId + '/' + data.id;
+    } else if (showPart == 2) {
+      _url = _url + '/' + data.shareId + '/' + data.id;
+      _createDownloadUrl = _createDownloadUrl + '/' + data.shareId + '/' + data.id;
     }
     url.value = _url
     downloadUrl.value = _downloadUrl

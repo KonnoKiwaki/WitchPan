@@ -24,6 +24,12 @@ export default {
       videoUrl: '/api/file/ts/getVideoInfo',
       createDownloadUrl: '/file/createDownloadUrl',
       downloadUrl: '/api/file/download'
-    }
+    },
+    2: {
+        fileUrl: '/showShare/getFile',
+        videoUrl: '/api/showShare/ts/getVideoInfo',
+        createDownloadUrl: '/showShare/createDownloadUrl',
+        downloadUrl: '/api/showShare/download'
+    },
   }
 }
